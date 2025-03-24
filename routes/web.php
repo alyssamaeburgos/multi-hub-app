@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\web\TaskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,7 +17,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/home', function() {
+Route::get('/home', function () {
     return Inertia::render('Home');
 })->name('home');
 
@@ -37,6 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Task routes
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

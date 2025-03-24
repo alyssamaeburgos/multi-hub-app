@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link } from "@inertiajs/vue3";
+import Footer from "../Components/Landing/Footer.vue";
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -36,6 +37,15 @@ const showingNavigationDropdown = ref(false);
                                     :active="route().current('dashboard')"
                                 >
                                     Dashboard
+                                </NavLink>
+                            </div>
+
+                            <!-- Navigation Links | Tasks -->
+                            <div
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
+                            >
+                                <NavLink :href="route('tasks.index')">
+                                    Task Manager
                                 </NavLink>
                             </div>
                         </div>
@@ -85,6 +95,13 @@ const showingNavigationDropdown = ref(false);
                                         >
                                             Log Out
                                         </DropdownLink>
+                                        <!-- <DropdownLink
+                                            :href="route('logout')"
+                                            method="post"
+                                            as="button"
+                                        >
+                                            Log Out
+                                        </DropdownLink> -->
                                     </template>
                                 </Dropdown>
                             </div>
@@ -188,6 +205,8 @@ const showingNavigationDropdown = ref(false);
             <main>
                 <slot />
             </main>
+
+            <Footer></Footer>
         </div>
     </div>
 </template>

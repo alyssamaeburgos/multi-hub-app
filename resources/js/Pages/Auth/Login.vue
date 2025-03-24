@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
@@ -26,6 +26,53 @@ const submit = () => {
     form.post(route('login'), {
         onFinish: () => form.reset('password'),
     });
+};
+</script> -->
+
+<script setup>
+import Checkbox from "@/Components/Checkbox.vue";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TextInput from "@/Components/TextInput.vue";
+import { Head, Link, useForm } from "@inertiajs/vue3";
+// import axios from "@/axios"; // Import the configured axios instance
+// import { onMounted } from "vue";
+
+defineProps({
+    canResetPassword: Boolean,
+    status: String,
+});
+
+const form = useForm({
+    email: "",
+    password: "",
+    remember: false,
+});
+
+const submit = async () => {
+    // try {
+    //     const response = await axios.post('/login', form);
+    //     console.log('Login successful:', response.data);
+    // } catch (error) {
+    //     console.error('Login error:', error.response?.data);
+    // } finally {
+    //     form.reset('password');
+    // }
+
+    form.post(route("login"), {
+        onFinish: () => form.reset("password"),
+    });
+
+    // axios
+    //     .post("/login", form)
+    //     .then((response) => {
+    //         console.log(response.data);
+    //     })
+    //     .catch((error) => {
+    //         console.error(error);
+    //     });
 };
 </script>
 
@@ -85,7 +132,11 @@ const submit = () => {
                     Forgot your password?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton
+                    class="ms-4"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
                     Log in
                 </PrimaryButton>
             </div>

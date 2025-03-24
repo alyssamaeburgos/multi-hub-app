@@ -8,9 +8,13 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\JsonResponse;
+use App\Models\User;
+
 
 class AuthenticatedSessionController extends Controller
 {
@@ -28,13 +32,27 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    // public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request): JsonResponse
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
+        // $user = User::where('email', $request->email)->first();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        // $token = $user()->createToken($request->token_name);
+
+        // Ensure the token name is always a string
+        $token = $request->user()->createToken($request->token_name ?? 'auth_token')->plainTextToken;
+
+        // $request->session()->regenerate();
+
+        // return redirect()->intended(RouteServiceProvider::HOME);
+
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => $request->user(),
+        ]);
     }
 
     /**

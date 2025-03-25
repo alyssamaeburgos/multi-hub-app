@@ -29,11 +29,24 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
+    public function apiLogin(LoginRequest $request): JsonResponse
+    {
+        $request->authenticate();
+
+        $token = $request->user()->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => $request->user(),
+        ]);
+    }
+
     /**
      * Handle an incoming authentication request.
      */
-    // public function store(LoginRequest $request): RedirectResponse
-    public function store(LoginRequest $request): JsonResponse
+    public function store(LoginRequest $request): RedirectResponse
+    // public function store(LoginRequest $request): JsonResponse
     {
         $request->authenticate();
 
@@ -42,17 +55,17 @@ class AuthenticatedSessionController extends Controller
         // $token = $user()->createToken($request->token_name);
 
         // Ensure the token name is always a string
-        $token = $request->user()->createToken($request->token_name ?? 'auth_token')->plainTextToken;
+        // $token = $request->user()->createToken($request->token_name ?? 'auth_token')->plainTextToken;
 
-        // $request->session()->regenerate();
+        $request->session()->regenerate();
 
-        // return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended(RouteServiceProvider::HOME);
 
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-            'user' => $request->user(),
-        ]);
+        // return response()->json([
+        //     'message' => 'Login successful',
+        //     'token' => $token,
+        //     'user' => $request->user(),
+        // ]);
     }
 
     /**

@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
+// use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 
 class TaskController extends Controller
 {
@@ -56,7 +60,13 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['message' => 'Task not found', 404]);
+        }
+
+        return response()->json($task);
     }
 
     /**
@@ -64,7 +74,33 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Validated the request data
+        $validatedData = Validator::make($request->all(), [
+            // 'user_id' => 'nullable|exists:users,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'deadline' => 'nullable|date',
+            'status' => 'nullable|in:open,in progress,done',
+        ]);
+
+        if ($validatedData->fails()) {
+            return response()->json(['errors' => $validatedData->errors(), 422]);
+        }
+
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['message' => 'Product not found', 404]);
+        };
+
+        $task->update($request->all());
+
+        // return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
+        return response()->json([
+            'message' => 'Task updated successfully!',
+            'task' => $task,
+            'redirect' => route('tasks.show'), // Send the redirect URL as data
+        ]);
     }
 
     /**
@@ -72,6 +108,20 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // $task = Task::find($id);
+
+        // $deleted = DB::table('task')->where('id', '=', $id)->delete();
+
+        // return Redirect::to('/tasks/all');
+
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+    
+        $task->delete();
+        
+        return response()->json(['message' => 'Task deleted successfully']);
     }
 }

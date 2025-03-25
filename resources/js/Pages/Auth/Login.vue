@@ -52,27 +52,9 @@ const form = useForm({
 });
 
 const submit = async () => {
-    // try {
-    //     const response = await axios.post('/login', form);
-    //     console.log('Login successful:', response.data);
-    // } catch (error) {
-    //     console.error('Login error:', error.response?.data);
-    // } finally {
-    //     form.reset('password');
-    // }
-
     form.post(route("login"), {
         onFinish: () => form.reset("password"),
     });
-
-    // axios
-    //     .post("/login", form)
-    //     .then((response) => {
-    //         console.log(response.data);
-    //     })
-    //     .catch((error) => {
-    //         console.error(error);
-    //     });
 };
 </script>
 

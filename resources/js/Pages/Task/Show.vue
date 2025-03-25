@@ -1,79 +1,5 @@
 <template>
     <AuthenticatedLayout>
-        <div class="flex justify-center items-center mt-5">
-            <div class="tasks-add w-98 p-8 border rounded shadow-md">
-                <div class="tasks-form">
-                    <h1 class="action-title text-2xl font-semibold mb-6">
-                        Add Task
-                    </h1>
-                    <form @submit.prevent="submitForm">
-                        <input
-                            class="w-full p-2 border rounded mt-2"
-                            v-model="form.title"
-                            placeholder="Title"
-                        />
-                        <textarea
-                            class="w-full p-2 border rounded mt-4"
-                            v-model="form.description"
-                            placeholder="Description"
-                        ></textarea>
-
-                        <div class="flex space-x-2 mt-4">
-                            <div class="flex-1">
-                                <label
-                                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    for="deadline"
-                                >
-                                    Deadline Date
-                                </label>
-                                <input
-                                    type="date"
-                                    id="deadline"
-                                    v-model="form.deadline"
-                                />
-                                <!-- class="w-full p-2 border rounded" -->
-                            </div>
-
-                            <div class="flex-1">
-                                <label
-                                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                    for="status"
-                                >
-                                    Status
-                                </label>
-                                <select
-                                    v-model="form.status"
-                                    id="status"
-                                    class="w-full p-2 border rounded"
-                                >
-                                    <!-- class="w-full p-2 border rounded" style="background-color: white" -->
-                                    <option
-                                        v-for="option in statusOptions"
-                                        :key="option.value"
-                                        :value="option.value"
-                                        :style="optionStyle(option.value)"
-                                    >
-                                        {{ option.text }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button
-                            class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
-                            type="submit"
-                        >
-                            Create Task
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- -------------------------------------------------------- -->
-
-        <!-- ------------------ -->
-
         <section class="container px-4 mx-auto mb-5">
             <div class="flex flex-col mt-6">
                 <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -256,10 +182,10 @@
                                             >
                                                 <!-- Edit button -->
                                                 <button
-                                                    class="text-gray-700 transition-colors duration-200 dark:hover:text-yellow-500 dark:text-gray-600 hover:text-yellow-500 focus:outline-none"
                                                     @click="
                                                         goToEditPage(task.id)
                                                     "
+                                                    class="text-gray-700 transition-colors duration-200 dark:hover:text-yellow-500 dark:text-gray-600 hover:text-yellow-500 focus:outline-none"
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
@@ -402,6 +328,8 @@ import { usePage } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 
 export default {
+    name: "Show All Tasks",
+
     components: {
         AuthenticatedLayout,
     },
@@ -414,34 +342,18 @@ export default {
     },
 
     setup(props) {
-        // const page = usePage(); // ✅ Get page props
-        // const authUser = computed(() => page.props.auth.user); // ✅ Get authenticated user
+        // const user = usePage().props.auth.user;
 
-        const user = usePage().props.auth.user;
-
-        // ✅ Debugging
-        // console.log("Page Props:", page.props);
-        // console.log("Authenticated User:", authUser.value);
-        // console.log(user);
-
-        const form = ref({
-            // user_id: authUser.value?.id, // ✅ Assign user_id dynamically
-            user_id: user.id,
-            title: "",
-            description: "",
-            deadline: "",
-            status: "open",
-        });
-
-        // Reactive variables for tasks and loading state
         const tasks = ref(props.tasks || []); // Use prop if provided, otherwise initialize as empty array
+        // const tasks = ref([]);
         const loading = ref(true);
 
         const goToEditPage = (id) => {
             router.visit(route("tasks.update", { id }));
         };
 
-        const deleteTask = (id) => {
+        const deleteTask = async (id) => {
+
             if (!window.confirm("Are you sure you want to delete this task?")) {
                 return;
             }
@@ -494,9 +406,6 @@ export default {
         // Function to fetch tasks from the API
         const tableLoading = async () => {
             try {
-                console.log("Axios inside tableLoading:", axios); // Add this line
-                console.log("Axios right before get:", axios); //Add this line
-
                 const response = await axios.get("/api/tasks"); // Call Laravel API
                 console.log("Fetched Tasks:", response.data); // Debugging: Check if API returns empty array
                 tasks.value = response.data; // Update tasks with fetched data
@@ -507,170 +416,20 @@ export default {
                 // console.log("Final tasks value:", tasks.value); // Check final value
             }
         };
-        //     try {
-        //         form.value.user_id = authUser.value?.id; // Ensure user_id before sending
-
-        //         const response = await axios.post("/api/tasks", form.value);
-        //         console.log("Success:", response.data);
-        //         alert("Task added successfully!");
-
-        //         // Optionally, refresh the task list after adding
-        //         await tableLoading();
-
-        //         // Clear the form after successful submission
-        //         form.value = {
-        //             user_id: authUser.value?.id, // ✅ Reset with user_id
-        //             title: "",
-        //             description: "",
-        //             deadline: "",
-        //             status: "open",
-        //         };
-        //     } catch (error) {
-        //         console.error("Error:", error.response.data);
-        //         alert("Failed to add task");
-        //     }
-        // };
-
-        const submitForm = async () => {
-            try {
-                form.value.user_id = user.id; // Ensure user_id before sending
-
-                const response = await axios.post("/api/tasks", form.value);
-                console.log("Success:", response.data);
-                alert("Task added successfully!");
-
-                await tableLoading();
-
-                form.value = {
-                    user_id: user.id, // Reset with user_id
-                    title: "",
-                    description: "",
-                    deadline: "",
-                    status: "open",
-                };
-            } catch (error) {
-                console.error("Error:", error); // Log the entire error object
-
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.error("Error Response Data:", error.response.data);
-                    console.error(
-                        "Error Response Status:",
-                        error.response.status
-                    );
-                    console.error(
-                        "Error Response Headers:",
-                        error.response.headers
-                    );
-                    alert("Failed to add task: " + error.response.data.message); // or a more specific message
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                    // http.ClientRequest in node.js
-                    console.error("Error Request:", error.request);
-                    alert("Failed to add task: No response from server.");
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.error("Error Message:", error.message);
-                    alert("Failed to add task: " + error.message);
-                }
-            }
-        };
 
         onMounted(() => {
             tableLoading();
         });
 
         return {
-            form,
             loading,
             tasks,
             statusOptions,
             optionStyle,
             statusClass,
-            submitForm,
             goToEditPage,
             deleteTask,
         };
     },
 };
 </script>
-
-<style>
-.action-title {
-    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-    font-size: larger;
-}
-
-.tasks {
-    padding: 20px;
-    /* background-color: #f9f9f9; */
-    /* background-color: #FAF1E6; */
-    /* border-radius: 8px; */
-    max-width: 600px;
-    /* margin: 0 auto; */
-    /* display: flex;
-    flex-basis: auto; */
-}
-
-.tasks-add {
-    margin-bottom: 20px;
-}
-
-/* .tasks-form { */
-/* max-width: 50%; */
-/* display: flex;
-    justify-content: center;
-    align-items: center; */
-/* margin-left: 50px; */
-/* } */
-
-.tasks-add input,
-.tasks-add textarea {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: calc(
-        100% - 22px
-    ); /* Adjust width to account for padding and border */
-}
-
-.tasks-add textarea {
-    resize: vertical; /* Allow vertical resizing only */
-    min-height: 200px; /* Set a minimum height for the textarea */
-}
-
-.tasks-add button {
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.tasks-add button:hover {
-    background-color: #218838;
-}
-
-.tasks-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tasks-table th,
-.tasks-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.tasks-table th {
-    background-color: #f2f2f2;
-}
-
-.tasks-table tr:hover {
-    background-color: #f1f1f1;
-}
-</style>

@@ -41,6 +41,9 @@ Route::middleware('auth')->group(function () {
 
     // Task routes
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/{id}/edit', [TaskController::class, 'update'])->name('tasks.update');
+    // Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
+    Route::get('/tasks/all', [TaskController::class, 'show'])->name('tasks.show');
 });
 
 require __DIR__ . '/auth.php';

@@ -72,8 +72,6 @@
 
         <!-- -------------------------------------------------------- -->
 
-        <!-- ------------------ -->
-
         <section class="container px-4 mx-auto mb-5">
             <div class="flex flex-col mt-6">
                 <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -395,11 +393,12 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { usePage } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
+import Swal from "sweetalert2";
 
 export default {
     components: {
@@ -425,11 +424,11 @@ export default {
         // console.log(user);
 
         const form = ref({
-            // user_id: authUser.value?.id, // ✅ Assign user_id dynamically
             user_id: user.id,
             title: "",
             description: "",
-            deadline: "",
+            // deadline: "",
+            deadline: null, // Allow null value
             status: "open",
         });
 
@@ -442,22 +441,46 @@ export default {
         };
 
         const deleteTask = (id) => {
-            if (!window.confirm("Are you sure you want to delete this task?")) {
-                return;
-            }
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios
+                        .delete(`/api/tasks/${id}`)
+                        .then(() => {
+                            tasks.value = tasks.value.filter(
+                                (task) => task.id !== id
+                            );
+                            Swal.fire(
+                                "Deleted!",
+                                "Your task has been deleted.",
+                                "success"
+                            );
+                        })
+                        .catch((error) =>
+                            console.error("Error deleting task:", error)
+                        );
+                }
+            });
 
-            axios
-                .delete(`/api/tasks/${id}`)
-                .then((response) => {
-                    console.log(response.data.message);
-                    tasks.value = tasks.value.filter((task) => task.id !== id);
-                })
-                .catch((error) => {
-                    console.error(
-                        "Error deleting task:",
-                        error.response?.data || error.message
-                    );
-                });
+            // axios
+            //     .delete(`/api/tasks/${id}`)
+            //     .then((response) => {
+            //         console.log(response.data.message);
+            //         tasks.value = tasks.value.filter((task) => task.id !== id);
+            //     })
+            //     .catch((error) => {
+            //         console.error(
+            //             "Error deleting task:",
+            //             error.response?.data || error.message
+            //         );
+            //     });
         };
 
         const statusClass = (status) => {
@@ -494,11 +517,14 @@ export default {
         // Function to fetch tasks from the API
         const tableLoading = async () => {
             try {
-                console.log("Axios inside tableLoading:", axios); // Add this line
-                console.log("Axios right before get:", axios); //Add this line
+                // Debugging:
+                // console.log("Axios inside tableLoading:", axios); // Add this line
+                // console.log("Axios right before get:", axios); //Add this line
 
                 const response = await axios.get("/api/tasks"); // Call Laravel API
-                console.log("Fetched Tasks:", response.data); // Debugging: Check if API returns empty array
+
+                // console.log("Fetched Tasks:", response.data); // Debugging: Check if API returns empty array
+
                 tasks.value = response.data; // Update tasks with fetched data
             } catch (error) {
                 console.error("Error fetching tasks:", error); // Log errors
@@ -507,37 +533,27 @@ export default {
                 // console.log("Final tasks value:", tasks.value); // Check final value
             }
         };
-        //     try {
-        //         form.value.user_id = authUser.value?.id; // Ensure user_id before sending
-
-        //         const response = await axios.post("/api/tasks", form.value);
-        //         console.log("Success:", response.data);
-        //         alert("Task added successfully!");
-
-        //         // Optionally, refresh the task list after adding
-        //         await tableLoading();
-
-        //         // Clear the form after successful submission
-        //         form.value = {
-        //             user_id: authUser.value?.id, // ✅ Reset with user_id
-        //             title: "",
-        //             description: "",
-        //             deadline: "",
-        //             status: "open",
-        //         };
-        //     } catch (error) {
-        //         console.error("Error:", error.response.data);
-        //         alert("Failed to add task");
-        //     }
-        // };
 
         const submitForm = async () => {
             try {
                 form.value.user_id = user.id; // Ensure user_id before sending
 
                 const response = await axios.post("/api/tasks", form.value);
-                console.log("Success:", response.data);
-                alert("Task added successfully!");
+                // console.log("Success:", response.data);
+                // alert("Task added successfully!");
+
+                Swal.fire({
+                    title: "Task added successfully!",
+                    icon: "success",
+                    timer: 1000, // Show for 1 second
+                    showConfirmButton: false, // No button
+                    allowOutsideClick: false, // Prevent closing by clicking outside
+                    didOpen: () => {
+                        setTimeout(() => {
+                            window.location.href = "/tasks/all"; // Redirect after 1 second
+                        }, 1000);
+                    },
+                });
 
                 await tableLoading();
 
@@ -549,7 +565,7 @@ export default {
                     status: "open",
                 };
             } catch (error) {
-                console.error("Error:", error); // Log the entire error object
+                // console.error("Error:", error); // Log the entire error object
 
                 if (error.response) {
                     // The request was made and the server responded with a status code
@@ -585,13 +601,13 @@ export default {
         return {
             form,
             loading,
-            tasks,
             statusOptions,
+            tasks,
+            deleteTask,
+            goToEditPage,
             optionStyle,
             statusClass,
             submitForm,
-            goToEditPage,
-            deleteTask,
         };
     },
 };

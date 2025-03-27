@@ -50,10 +50,6 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        // $user = User::where('email', $request->email)->first();
-
-        // $token = $user()->createToken($request->token_name);
-
         // Ensure the token name is always a string
         // $token = $request->user()->createToken($request->token_name ?? 'auth_token')->plainTextToken;
 

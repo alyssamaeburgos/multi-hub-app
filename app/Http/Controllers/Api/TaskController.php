@@ -18,7 +18,6 @@ class TaskController extends Controller
      */
     public function index()
     {
-        // $tasks = DB::table('tasks')->get();
         $tasks = Task::with('user')->get(); // Eager load the 'user' relationship
 
         return $tasks;
@@ -38,8 +37,6 @@ class TaskController extends Controller
             'status' => 'nullable|in:open,in progress,done',
         ]);
 
-        // create a new task using the validated data
-        // Task::create($validatedData);
         $task = Task::create([
             // 'user_id' => $request->input('user_id'),
             'user_id' => auth()->id(), // ✅ Get authenticated user ID
@@ -108,12 +105,6 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        // $task = Task::find($id);
-
-        // $deleted = DB::table('task')->where('id', '=', $id)->delete();
-
-        // return Redirect::to('/tasks/all');
-
         $task = Task::find($id);
 
         if (!$task) {

@@ -20,9 +20,9 @@ const user = usePage().props.auth.user;
 const form = useForm({
     name: user.name,
     email: user.email,
-    first_name: user.first_name || "", // Add these lines
+    first_name: user.first_name || "",
     middle_name: user.middle_name || "",
-    last_name: user.last_name || "", // Add these lines
+    last_name: user.last_name || "",
     birthdate: user.birthdate || "",
 });
 

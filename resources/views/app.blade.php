@@ -9,15 +9,6 @@
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Font Awesome -->
-    <!-- <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        rel="stylesheet" /> -->
-    <!-- Google Fonts -->
-    <!-- <link
-        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-        rel="stylesheet" /> -->
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

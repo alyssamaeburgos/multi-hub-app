@@ -60,12 +60,35 @@
                             </div>
                         </div>
 
-                        <button
+                        <div class="flex space-x-2 mt-4">
+                            <div class="flex-1" v-if="tasks">
+                                <!-- <button
                             class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
                             type="submit"
-                        >
-                            Update Task
-                        </button>
+                        > -->
+                                <a :href="route('tasks.index')">
+                                    <button
+                                        class="mt-6 w-full p-2 bg-gray-500 text-white rounded"
+                                        type="button"
+                                    >
+                                        Cancel
+                                    </button></a
+                                >
+                            </div>
+
+                            <div class="flex-1">
+                                <!-- <button
+                            class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
+                            type="submit"
+                        > -->
+                                <button
+                                    class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
+                                    type="submit"
+                                >
+                                    Update Task
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -83,7 +106,8 @@
 import { ref } from "vue";
 import axios from "axios";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { usePage } from "@inertiajs/vue3"; // Import usePage
+import { usePage } from "@inertiajs/vue3";
+import Swal from "sweetalert2";
 
 export default {
     name: "Edit Task",
@@ -93,11 +117,6 @@ export default {
     },
 
     props: {
-        // tasks: {
-        //     type: Array,
-        //     default: () => [],
-        // },
-
         task: {
             type: Object,
             required: true,
@@ -111,7 +130,10 @@ export default {
             user_id: user.id,
             title: props.task.title, // Initialize form with task data
             description: props.task.description,
-            deadline: props.task.deadline.split(" ")[0], //Format date
+            // deadline: props.task.deadline.split(" ")[0], //Format date
+            deadline: props.task.deadline
+                ? props.task.deadline.split(" ")[0]
+                : "",
             status: props.task.status,
         });
 
@@ -153,13 +175,28 @@ export default {
         };
 
         const submitForm = async () => {
-            try {
-                const response = await axios.put(`/api/tasks/${props.task.id}`, form.value);
 
-                setTimeout(() => {
-                    successMessage.value = "Task updated successfully!";
-                    window.location.href = response.data.redirect;
-                }, 500);
+            try {
+                // Ensure deadline is not null before sending data
+                form.value.deadline = form.value.deadline || "";
+
+                const response = await axios.put(
+                    `/api/tasks/${props.task.id}`,
+                    form.value
+                );
+
+                Swal.fire({
+                    title: "Task updated successfully!",
+                    icon: "success",
+                    timer: 1000, // Show for 1 second
+                    showConfirmButton: false, // No button
+                    allowOutsideClick: false, // Prevent closing by clicking outside
+                    didOpen: () => {
+                        setTimeout(() => {
+                            window.location.href = response.data.redirect; // Redirect after 1 second
+                        }, 1000);
+                    },
+                });
 
             } catch (error) {
                 if (error.response && error.response.status === 422) {
@@ -174,9 +211,9 @@ export default {
             form,
             loading,
             tasks,
-            statusOptions,
             optionStyle,
             statusClass,
+            statusOptions,
             submitForm,
             successMessage,
         };

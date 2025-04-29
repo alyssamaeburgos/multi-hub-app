@@ -33,6 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [TaskController::class, 'update'])->name('update');
         Route::delete('/{id}', [TaskController::class, 'destroy'])->name('delete');
     });
+
+    // Note APR routes
 });
 
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {

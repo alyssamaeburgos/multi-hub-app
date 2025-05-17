@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\NoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [TaskController::class, 'destroy'])->name('delete');
     });
 
-    // Note APR routes
+    // Note API routes
+    Route::prefix('notes')->name('notes.')->group(function () {
+        Route::get('/', [NoteController::class, 'index'])->name('index');
+        Route::post('/', [NoteController::class, 'store'])->name('store');
+        Route::put('/{id}', [NoteController::class, 'update'])->name('update');
+    });
 });
 
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {

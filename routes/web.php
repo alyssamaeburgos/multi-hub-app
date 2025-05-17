@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\web\NoteController;
 use App\Http\Controllers\web\TaskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -46,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks/all', [TaskController::class, 'show'])->name('tasks.show');
 
     // Note routes
-    
+    Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
     
 });
 

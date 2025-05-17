@@ -137,12 +137,12 @@ const showingNavigationDropdown = ref(false);
 
                                             <template #content>
                                                 <DropdownLink
-                                                    :href="route('tasks.index')"
+                                                    :href="route('notes.index')"
                                                 >
                                                     Add Note
                                                 </DropdownLink>
                                                 <DropdownLink
-                                                    :href="route('tasks.show')"
+                                                    :href="route('notes.index')"
                                                 >
                                                     List Notes
                                                 </DropdownLink>

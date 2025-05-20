@@ -1,237 +1,228 @@
 <template>
     <AuthenticatedLayout>
-        <!-- <SideBar>
-            <main class="flex-1 overflow-y-auto bg-gray-50">
-                <NoteIndex
-                    v-if="!selectedNote"
-                    :notes="notes"
-                    @select-note="handleNoteSelected"
-                />
-                <NoteDetail v-else :note="selectedNote" />
-            </main>
-        </SideBar> -->
-
         <div class="flex h-screen">
-            <SideBar @note-selected="handleNoteSelected" />
+            <SideBar
+                :notes="notes"
+                :selected-note="selectedNote"
+                @note-selected="handleNoteSelected"
+                @add-note="addNewNote"
+            />
             <main class="flex-1 overflow-y-auto bg-gray-50">
                 <NoteIndex
                     v-if="!selectedNote"
                     :notes="notes"
                     @select-note="handleNoteSelected"
                 />
-
-                <!-- <NoteDetail
-                    v-else
-                    :note="selectedNote"
-                    :updatedNote="handleNoteUpdate"
-                    @note-updated="handleNoteUpdate"
-                    @go-back="handleGoBack"
-                /> -->
 
                 <NoteDetail
                     v-else
                     :note="selectedNote"
-                    :updatedNote="handleNoteUpdate"
+                    :is-updating="isUpdating"
+                    @note-added="handleAddNote"
                     @note-updated="handleNoteUpdate"
+                    @delete-note="deleteNote"
                     @go-back="handleGoBack"
                 />
-
-                <div v-if="loading">Loading...</div>
             </main>
         </div>
     </AuthenticatedLayout>
 </template>
 
-<script>
-import { ref, onMounted, watch, reactive } from "vue";
+<script setup>
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { usePage } from "@inertiajs/vue3";
-import { router } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import SideBar from "@/Components/Note/Sidebar.vue";
 import NoteIndex from "@/Components/Note/NoteIndex.vue";
 import NoteDetail from "@/Components/Note/NoteDetail.vue";
 
-export default {
-    components: {
-        AuthenticatedLayout,
-        SideBar,
-        NoteIndex,
-        NoteDetail,
-    },
-    props: {},
+// ===== STATE MANAGEMENT (Parent handles all data) =====
+const notes = ref([]);
+const selectedNote = ref(null);
+const loading = ref(true);
+const user = usePage().props.auth.user;
+const isUpdating = ref(false);
 
-    setup() {
-        // const notes = ref([
-        //     {
-        //         id: 1,
-        //         title: "Grocery List",
-        //         content: "Milk, Eggs, Bread...",
-        //         date_created: new Date(),
-        //         date_modified: new Date(),
-        //         user_id: "user123",
-        //     },
-        //     {
-        //         id: 2,
-        //         title: "Project Ideas",
-        //         content: "- New feature X\n- Refactor Y...",
-        //         date_created: new Date(),
-        //         date_modified: new Date(),
-        //         user_id: "user123",
-        //     },
-        //     {
-        //         id: 3,
-        //         title: "",
-        //         content: "Just a quick thought.",
-        //         date_created: new Date(),
-        //         date_modified: new Date(),
-        //         user_id: "user123",
-        //     },
-        // ]);
+// ===== DATA FETCHING (Only in Parent) =====
+const fetchNotes = async () => {
+    try {
+        const response = await axios.get("/api/notes"); // Call Laravel API
 
-        const user = usePage().props.auth.user;
-
-        const loading = ref(false);
-        const notes = ref([]);
-
-        const noted = async () => {
-            try {
-                const response = await axios.get("/api/notes"); // Call Laravel API
-
-                // console.log("Fetched Tasks:", response.data); // Debugging: Check if API returns empty array
-
-                notes.value = response.data; // Update notes with fetched data
-            } catch (error) {
-                console.error("Error fetching notes:", error); // Log errors
-            } finally {
-                loading.value = false;
-                // console.log("Final tasks value:", tasks.value); // Check final value
-            }
-        };
-
-        const selectedNote = ref(null);
-
-        const handleNoteSelected = (note) => {
-            // Replace or add the note in the notes list
-            const index = notes.value.findIndex((n) => n.id === note.id);
-            if (index !== -1) {
-                notes.value[index] = note; // Update existing note
-            } else {
-                notes.value.unshift(note); // Add new note
-            }
-
-            console.log("handleNoteSelected triggered with:", note);
-            selectedNote.value = note;
-            console.log("selectedNote in parent:", selectedNote.value);
-        };
-
-        const handleNoteUpdate = async (updatedNote) => {
-            try {
-                const responses = await axios.put(
-                    `/api/notes/${updatedNote.id}`,
-                    updatedNote
-                );
-
-                // //////
-                // Get the updated note from the response (ensure the API is returning the full updated note)
-                // const updatedNoteFromServer = response.data.note;
-
-                // Optionally, update the notes array locally to reflect the change immediately
-                // Find the note in the array and replace it with the updated one
-                const index = notes.value.findIndex(
-                    (note) => note.id === updatedNote.id
-                );
-
-                if (index !== -1) {
-                    // ````;
-                    notes.value[index] = updatedNote;
-                } else {
-                    notes.value.unshift(updatedNote);
-                }
-
-                // Optionally, update the selected note to reflect the update in real time
-                // selectedNote.value = updatedNoteFromServer;
-
-                selectedNote.value = updatedNote;
-
-                // console.log("Note updated successfully:", updatedNote);
-
-                // // Optionally show a success message using SweetAlert
-                // Swal.fire({
-                //     icon: "success",
-                //     title: "Note Updated!",
-                //     showConfirmButton: false,
-                //     timer: 1500,
-                // });
-            } catch (error) {
-                console.error("Error updating note:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Error Updating Note",
-                    text: "Something went wrong while updating the note.",
-                });
-            }
-        };
-
-        // const handleNoteUpdate = async (updatedNote) => {
-        //     try {
-        //         const response = await axios.put(
-        //             `/api/notes/${updatedNote.id}`,
-        //             updatedNote
-        //         );
-        //         const serverUpdateNote = response.data;
-
-        //         const index = notes.value.findIndex(
-        //             (note) => note.id === serverUpdateNote.id
-        //         );
-
-        //         if (index !== -1) {
-        //             notes.value = [
-        //                 ...notes.value.slice(0, index),
-        //                 serverUpdateNote,
-        //                 ...notes.value.slice(index + 1),
-        //             ];
-
-        //             // notes.value[index] = updatedNote;
-        //         } else {
-        //             // notes.value.unshift(updatedNote);
-        //             notes.value = [serverUpdateNote, ...notes.value];
-        //         }
-
-        //         selectedNote.value = serverUpdateNote;
-        //     } catch (error) {
-        //         console.error("Error updating note:", error);
-        //         Swal.fire({
-        //             icon: "error",
-        //             title: "Error Updating Note",
-        //             text: "Something went wrong while updating the note.",
-        //         });
-        //     }
-        // };
-
-        const handleGoBack = (note) => {
-            selectedNote.value = null; // Set selectedNote to null to show NoteIndex
-
-            // Check if it's a new note and not yet in the list
-            const exists = notes.value.some((n) => n.id === note.id);
-            if (!exists) {
-                notes.value.unshift(note); // Add new note to the list
-            }
-        };
-
-        // value of noted function is being sent to the child component - NoteIndex.vue to display the list of all notes.
-        onMounted(noted);
-
-        return {
-            notes,
-            noted,
-            selectedNote,
-            handleNoteSelected,
-            handleNoteUpdate,
-            handleGoBack,
-            loading,
-        };
-    },
+        notes.value = response.data; // Update notes with fetched data
+    } catch (error) {
+        console.error("Error fetching notes:", error); // Log errors
+    } finally {
+        loading.value = false;
+    }
 };
+
+// ===== EVENT HANDLERS (Parent modifies state) =====
+const handleNoteSelected = (note) => {
+    // Replace or add the note in the notes list
+    const index = notes.value.findIndex((n) => n.id === note.id);
+    if (index !== -1) {
+        notes.value[index] = note; // Update existing note
+    } else {
+        notes.value.unshift(note); // Add new note
+    }
+
+    console.log("handleNoteSelected triggered with:", note);
+    selectedNote.value = note;
+    console.log("selectedNote in parent:", selectedNote.value);
+};
+
+const handleAddNote = async (newNote) => {
+    isUpdating.value = true;
+
+    try {
+        const response = await axios.post("/api/notes", newNote);
+
+        notes.value.unshift(response.data);
+
+        selectedNote.value = response.data;
+
+        Swal.fire({
+            title: "Note added successfully!",
+            icon: "success",
+            timer: 1000, // Show for 1 second
+            showConfirmButton: false, // No button
+            allowOutsideClick: false, // Prevent closing by clicking outside
+        });
+    } catch (error) {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.error("Error Response Data:", error.response.data);
+            console.error("Error Response Status:", error.response.status);
+            console.error("Error Response Headers:", error.response.headers);
+            alert("Failed to add task: " + error.response.data.message); // or a more specific message
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.error("Error Request:", error.request);
+            alert("Failed to add task: No response from server.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error("Error Message:", error.message);
+            alert("Failed to add note: " + error.message);
+        }
+    } finally {
+        isUpdating.value = false;
+    }
+};
+
+const addNewNote = () => {
+    if (isUpdating.value) {
+        console.log("Skipped addNewNote because update is in progress");
+        return;
+    }
+
+    const newNote = {
+        title: "",
+        content: "",
+        date_created: new Date(),
+        user_id: user.id,
+    };
+    notes.value.unshift(newNote);
+    selectedNote.value = newNote;
+};
+
+const handleNoteUpdate = async (updatedNote) => {
+    isUpdating.value = true;
+
+    try {
+        // 1. Send update to server
+        const response = await axios.put(
+            `/api/notes/${updatedNote.id}`,
+            updatedNote
+        );
+
+        // 2. Get server-verified data
+
+        const getAllUpdatedNotes = await axios.get("/api/notes"); // Call Laravel API
+
+        const notesFromServer = getAllUpdatedNotes.data; // Update notes with fetched data
+
+        notes.value = notesFromServer;
+
+        // 3. new process in finding the updated note in the list
+        const updatedNoteFromServer = notesFromServer.find(
+            (note) => note.id === updatedNote.id
+        );
+
+        // 4. New process in updating the local selected note reference
+        if (updatedNoteFromServer) {
+            const index = notes.value.findIndex((n) => n.id === updatedNote.id);
+
+            if (index !== -1) {
+                notes.value[index] = updatedNoteFromServer;
+            } else {
+                notes.value.unshift(updatedNoteFromServer);
+            }
+
+            selectedNote.value = updatedNoteFromServer;
+        }
+
+        // Show success message but stay on the same page
+        Swal.fire("Updated!", "Your note has been updated.", "success");
+
+        // 5. Update selected note reference
+        selectedNote.value = updatedNoteFromServer;
+    } catch (error) {
+        console.error("Error updating note:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Error Updating Note",
+            text: "Something went wrong while updating the note.",
+        });
+    } finally {
+        isUpdating.value = false;
+    }
+};
+
+const handleGoBack = () => {
+    selectedNote.value = null;
+
+    // Check if it's a new note and not yet in the list
+    // const exists = notes.value.some((n) => n.id === note.id);
+    // if (!exists) {
+    //     notes.value.unshift(note); // Add new note to the list
+    // }
+};
+
+const deleteNote = (note) => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios
+                .delete(`/api/notes/${note.id}`)
+                .then(() => {
+                    notes.value = notes.value.filter((n) => n.id !== note.id);
+                    Swal.fire(
+                        "Deleted!",
+                        "Your note has been deleted.",
+                        "success"
+                    ).then(() => {
+                        window.location.href = "/notes"; // Or your NoteIndex route
+                    });
+                })
+                .catch((error) => console.error("Error deleting note", error));
+        }
+    });
+
+    selectedNote.value = null;
+};
+
+// Fetch data when component loads
+onMounted(fetchNotes);
 </script>

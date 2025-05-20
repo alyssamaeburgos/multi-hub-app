@@ -32,13 +32,6 @@ class NoteController extends Controller
             // 'date_modified' => 'nullable|date',
         ]);
 
-        // $notes = Note::create([
-        //     'user_id' => auth()->id(), // ✅ Get authenticated user ID
-        //     'title' => $request->input('title'),
-        //     'content' => $request->input('content'),
-        //     'date_created' => $request->input('date_created'),
-        // ]);
-
         $notes = Note::create([
             'user_id' => auth()->id(),
             'title' => $validatedData['title'],
@@ -88,20 +81,6 @@ class NoteController extends Controller
             return response()->json(['message' => 'Note not found', 404]);
         };
 
-        // $notes->update($request->all());
-
-        // $notes->update([
-        //     'title' => $request->input('title'),
-        //     'content' => $request->input('content'),
-        //     'date_modified' => now(), // override to current date & time
-        // ]);
-
-        // $notes->update([
-        //     'title' => $validatedData['title'],
-        //     'content' => $validatedData['content'],
-        //     'date_modified' => now(), // Update date_modified
-        // ]);
-
         // Update the note, including the 'date_modified' if it's provided
         $notes->update(array_merge($validatedData->validated(), [
             'date_modified' => now(), // Set 'date_modified' to the current time
@@ -119,6 +98,14 @@ class NoteController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $notes = Note::find($id);
+
+        if (!$notes) {
+            return response()->json(['message' => 'Note not found'], 404);
+        }
+
+        $notes->delete();
+
+        return response()->json(['message' => 'Note deleted successfully']);
     }
 }

@@ -22,11 +22,33 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
 const props = defineProps({
-    notes: Array,
+    notes: {
+        type: Array,
+        required: true,
+    },
 });
 
 const emit = defineEmits(["select-note"]);
+
+const notes = ref(props.notes); //Local reactive reference
+
+const fetchNotes = async () => {
+    try {
+        const response = await axios.get("/api/notes");
+        notes.value = response.data;
+        console.log(notes.value);
+    } catch (error) {
+        console.error("Error fetching notes:", error);
+    }
+};
+
+// const emit = defineEmits(["new-note", "select-note"]);
+
+onMounted(() => {
+    fetchNotes();
+});
 </script>
 
 <style scoped>

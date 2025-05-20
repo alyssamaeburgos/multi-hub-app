@@ -15,9 +15,5 @@ class NoteController extends Controller
         return Inertia::render('Note/Index', [
             'notes' => $notes,
         ]);
-
-        // return Inertia::render('NoteIndex', [
-        //     'notes' => $notes,
-        // ]);
     }
 }

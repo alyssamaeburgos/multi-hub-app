@@ -1,4 +1,27 @@
 <template>
+    <div class="max-w-md mx-auto p-4">
+        <!-- <SearchInput
+            v-model="searchQuery"
+            placeholder="Search notes..."
+            button-text="Find"
+            @search="onSearch"
+        /> -->
+
+        <SearchInput
+            placeholder="Search notes..."
+            button-text="Find"
+            @search="onSearch"
+            @clear-search="handleClearSearch"
+        />
+
+        <!-- <ul>
+            <li v-for="note in notes" :key="note.id">{{ note.title }}</li>
+        </ul> -->
+
+        <!-- <div v-if="loading" class="mt-4">Searching...</div>
+
+        <div v-if="error" class="mt-4 text-red-500">{{ error }}</div> -->
+    </div>
     <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-6"
     >
@@ -22,11 +45,41 @@
 </template>
 
 <script setup>
+import SearchInput from "@/Components/SearchInput.vue";
+
 const props = defineProps({
     notes: Array,
+    modelValue: {
+        type: String,
+        default: "",
+    },
+    placeholder: {
+        type: String,
+        default: "Search...",
+    },
+    buttonText: {
+        type: String,
+        default: "Search",
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
+    withIcon: {
+        type: Boolean,
+        default: true,
+    },
 });
 
-const emit = defineEmits(["select-note"]);
+const emit = defineEmits(["select-note", "search", "clear-search"]);
+
+const onSearch = (term) => {
+    emit("search", term);
+};
+
+const handleClearSearch = (term) => {
+    emit("clear-search", term);
+};
 </script>
 
 <style scoped>

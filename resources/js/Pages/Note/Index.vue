@@ -12,6 +12,8 @@
                     v-if="!selectedNote"
                     :notes="notes"
                     @select-note="handleNoteSelected"
+                    @search="handleSearch"
+                    @clear-search="handleClearSearch"
                 />
 
                 <NoteDetail
@@ -68,9 +70,9 @@ const handleNoteSelected = (note) => {
         notes.value.unshift(note); // Add new note
     }
 
-    console.log("handleNoteSelected triggered with:", note);
+    // console.log("handleNoteSelected triggered with:", note);
     selectedNote.value = note;
-    console.log("selectedNote in parent:", selectedNote.value);
+    // console.log("selectedNote in parent:", selectedNote.value);
 };
 
 const handleAddNote = async (newNote) => {
@@ -78,10 +80,22 @@ const handleAddNote = async (newNote) => {
 
     try {
         const response = await axios.post("/api/notes", newNote);
+        const createdNote = response.data.data;
 
-        notes.value.unshift(response.data);
+        console.log("newNote", createdNote);
 
-        selectedNote.value = response.data;
+        // notes.value.unshift(createdNote);
+
+        const index = notes.value.findIndex(
+            (n) => !n.id && n.user_id === user.id
+        );
+        if (index !== -1) {
+            notes.value.splice(index, 1, createdNote); // Replace temporary note
+        } else {
+            notes.value.unshift(createdNote); // Fallback if temporary note not found
+        }
+
+        selectedNote.value = createdNote;
 
         Swal.fire({
             title: "Note added successfully!",
@@ -126,7 +140,7 @@ const addNewNote = () => {
         date_created: new Date(),
         user_id: user.id,
     };
-    notes.value.unshift(newNote);
+    // notes.value.unshift(newNote);
     selectedNote.value = newNote;
 };
 
@@ -185,12 +199,6 @@ const handleNoteUpdate = async (updatedNote) => {
 
 const handleGoBack = () => {
     selectedNote.value = null;
-
-    // Check if it's a new note and not yet in the list
-    // const exists = notes.value.some((n) => n.id === note.id);
-    // if (!exists) {
-    //     notes.value.unshift(note); // Add new note to the list
-    // }
 };
 
 const deleteNote = (note) => {
@@ -208,11 +216,13 @@ const deleteNote = (note) => {
                 .delete(`/api/notes/${note.id}`)
                 .then(() => {
                     notes.value = notes.value.filter((n) => n.id !== note.id);
-                    Swal.fire(
-                        "Deleted!",
-                        "Your note has been deleted.",
-                        "success"
-                    ).then(() => {
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your note has been deleted.",
+                        icon: "success",
+                        timer: 1000, // Auto close after 1 second
+                        showConfirmButton: false, // Hide the OK button
+                    }).then(() => {
                         window.location.href = "/notes"; // Or your NoteIndex route
                     });
                 })
@@ -221,6 +231,53 @@ const deleteNote = (note) => {
     });
 
     selectedNote.value = null;
+};
+
+// SEARCH NOTES
+const searchTerm = ref("");
+const error = ref(null);
+
+const searchNotes = async () => {
+    const response = await axios.get("/api/notes/search", {
+        params: { search: searchTerm.value },
+    });
+
+    notes.value = response.data;
+};
+
+const handleSearch = async (term) => {
+    try {
+        loading.value = true;
+        error.value = null;
+        searchTerm.value = term;
+
+        // Only search if term is not empty
+        if (term.trim()) {
+            await searchNotes();
+        } else {
+            // If empty search term, fetch all notes
+            await fetchNotes();
+        }
+    } catch (err) {
+        error.value = "Failed to search notes";
+    } finally {
+        loading.value = false;
+    }
+};
+
+const handleClearSearch = async (term) => {
+    try {
+        loading.value = true;
+        error.value = null;
+
+        searchTerm.value = term;
+        await fetchNotes();
+        console.log("Notes after fetch:", notes.value); // Debug
+    } catch (err) {
+        error.value = "Failed to search notes";
+    } finally {
+        loading.value = false;
+    }
 };
 
 // Fetch data when component loads

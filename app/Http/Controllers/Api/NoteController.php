@@ -108,4 +108,27 @@ class NoteController extends Controller
 
         return response()->json(['message' => 'Note deleted successfully']);
     }
+
+    public function search(Request $request)
+    {
+        $query = Note::query();
+
+        if ($search = $request->query('search')) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('content', 'like', "%{$search}%");
+        }
+
+        return response()->json($query->get());
+
+        // OR
+
+        // $search = $request->query('search');
+
+        // $notes = Note::when($search, function ($query, $search) {
+        //     return $query->where('title', 'like', "%{$search}%")
+        //         ->orWhere('content', 'like', "%{$search}%");
+        // })->get();
+
+        // return response()->json($notes);
+    }
 }

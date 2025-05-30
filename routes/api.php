@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\NoteController;
@@ -52,25 +51,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/search', [NoteController::class, 'search'])->name('search');
     });
 
-    // Blog API routes
-    // Route::prefix('blogs')->name('blogs.')->group(function () {
-    //     // Route::get('/', [BlogController::class, 'index'])->name('index');
-    //     Route::get('/user/blogs', [BlogController::class, 'userBlogs'])->name('user_blogs');
-    //     Route::post('/', [BlogController::class, 'store'])->name('store');
-    //     Route::get('/{blog}', [BlogController::class, 'show'])->name('show'); // Using implicit binding
-    //     Route::put('/{blog}', [BlogController::class, 'update'])->name('update'); // Using implicit binding
-    //     Route::delete('/{blog}', [BlogController::class, 'destroy'])->name('destroy'); // Using implicit binding
-    // });
+    // Blog and Comment API routes
     Route::apiResource('blogs', BlogController::class)->except(['index']);
     Route::get('blogs/{blog}/comments', [CommentController::class, 'index']);
     Route::post('blogs/{blog}/comments', [CommentController::class, 'store']);
     Route::delete('comments/{comment}', [CommentController::class, 'destroy']);
     Route::get('user/blogs', [BlogController::class, 'userBlogs']);
 
-    // Comments API Routes
-    Route::prefix('comments')->name('comments.')->group(function () {
-        // Route::get('/', [CommentController::class, 'index'])->name('index');
-    });
 });
 
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {

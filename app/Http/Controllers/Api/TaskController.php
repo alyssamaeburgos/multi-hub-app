@@ -47,8 +47,6 @@ class TaskController extends Controller
         ]);
 
         // redirect to a specific route with a success message
-        // return redirect()->route('tasks.index')->with('success', 'Task created successfuly');
-
         return response()->json(['message' => 'Item created successfully', 'data' => $task], 201);
     }
 

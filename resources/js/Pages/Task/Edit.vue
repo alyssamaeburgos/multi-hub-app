@@ -62,10 +62,6 @@
 
                         <div class="flex space-x-2 mt-4">
                             <div class="flex-1" v-if="tasks">
-                                <!-- <button
-                            class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
-                            type="submit"
-                        > -->
                                 <a :href="route('tasks.index')">
                                     <button
                                         class="mt-6 w-full p-2 bg-gray-500 text-white rounded"
@@ -77,10 +73,6 @@
                             </div>
 
                             <div class="flex-1">
-                                <!-- <button
-                            class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
-                            type="submit"
-                        > -->
                                 <button
                                     class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
                                     type="submit"

@@ -342,7 +342,6 @@ export default {
     },
 
     setup(props) {
-        // const user = usePage().props.auth.user;
 
         const loading = ref(true);
         const tasks = ref(props.tasks || []); // Use prop if provided, otherwise initialize as empty array

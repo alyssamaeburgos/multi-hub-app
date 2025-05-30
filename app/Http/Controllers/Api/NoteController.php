@@ -28,8 +28,6 @@ class NoteController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
-            // 'date_created' => 'nullable|date',
-            // 'date_modified' => 'nullable|date',
         ]);
 
         $notes = Note::create([
@@ -72,8 +70,6 @@ class NoteController extends Controller
         if ($validatedData->fails()) {
             return response()->json(['errors' => $validatedData->errors(), 422]);
         }
-
-        // $data = $validatedData->validated(); // get only the validated fields
 
         $notes = Note::find($id);
 
@@ -119,16 +115,5 @@ class NoteController extends Controller
         }
 
         return response()->json($query->get());
-
-        // OR
-
-        // $search = $request->query('search');
-
-        // $notes = Note::when($search, function ($query, $search) {
-        //     return $query->where('title', 'like', "%{$search}%")
-        //         ->orWhere('content', 'like', "%{$search}%");
-        // })->get();
-
-        // return response()->json($notes);
     }
 }

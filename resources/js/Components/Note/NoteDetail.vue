@@ -1,33 +1,3 @@
-<!-- <template>
-    <div v-if="props.note">
-        <input v-model="localNote.title" />
-        <textarea v-model="localNote.content" />
-        <button @click="emit('note-updated', localNote)">Save</button>
-        <button @click="emit('go-back')">Back</button>
-    </div>
-</template>
-
-<script setup>
-import { ref, watch } from "vue";
-
-const props = defineProps({
-    note: Object,
-});
-
-const emit = defineEmits(["note-updated", "go-back"]);
-
-// Local copy for editing
-const localNote = ref({ ...props.note });
-
-// Update local copy when prop changes
-watch(
-    () => props.note,
-    (newVal) => {
-        localNote.value = { ...newVal };
-    }
-);
-</script> -->
-
 <template>
     <div v-if="note" class="p-6">
         <p class="text-red-500 mt-2">note.id: {{ note.id }}</p>
@@ -63,13 +33,6 @@ watch(
     <div v-else class="p-6 text-gray-500 italic">
         Select a note to view its details.
     </div>
-
-    <!-- <button
-        @click="handleSaveOrUpdate"
-        class="mt-6 w-full p-2 bg-blue-500 text-white rounded"
-    >
-        {{ note?.id ? "Update" : "Save" }}
-    </button> -->
 
     <button
         @click="handleSaveOrUpdate"

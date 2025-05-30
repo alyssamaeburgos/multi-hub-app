@@ -1,26 +1,11 @@
 <template>
     <div class="max-w-md mx-auto p-4">
-        <!-- <SearchInput
-            v-model="searchQuery"
-            placeholder="Search notes..."
-            button-text="Find"
-            @search="onSearch"
-        /> -->
-
         <SearchInput
             placeholder="Search notes..."
             button-text="Find"
             @search="onSearch"
             @clear-search="handleClearSearch"
         />
-
-        <!-- <ul>
-            <li v-for="note in notes" :key="note.id">{{ note.title }}</li>
-        </ul> -->
-
-        <!-- <div v-if="loading" class="mt-4">Searching...</div>
-
-        <div v-if="error" class="mt-4 text-red-500">{{ error }}</div> -->
     </div>
     <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-6"

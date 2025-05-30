@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\NoteController;
+use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,8 +21,14 @@ use App\Http\Controllers\Api\NoteController;
 |
 */
 
+// PUBLIC ROUTES
+Route::get('blogs', [BlogController::class, 'index']);
+
+
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
+
+// AUTH SANCTUM ROUTES
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -42,6 +50,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [NoteController::class, 'update'])->name('update');
         Route::delete('/{id}', [NoteController::class, 'destroy'])->name('destroy');
         Route::get('/search', [NoteController::class, 'search'])->name('search');
+    });
+
+    // Blog API routes
+    // Route::prefix('blogs')->name('blogs.')->group(function () {
+    //     // Route::get('/', [BlogController::class, 'index'])->name('index');
+    //     Route::get('/user/blogs', [BlogController::class, 'userBlogs'])->name('user_blogs');
+    //     Route::post('/', [BlogController::class, 'store'])->name('store');
+    //     Route::get('/{blog}', [BlogController::class, 'show'])->name('show'); // Using implicit binding
+    //     Route::put('/{blog}', [BlogController::class, 'update'])->name('update'); // Using implicit binding
+    //     Route::delete('/{blog}', [BlogController::class, 'destroy'])->name('destroy'); // Using implicit binding
+    // });
+    Route::apiResource('blogs', BlogController::class)->except(['index']);
+    Route::get('blogs/{blog}/comments', [CommentController::class, 'index']);
+    Route::post('blogs/{blog}/comments', [CommentController::class, 'store']);
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy']);
+    Route::get('user/blogs', [BlogController::class, 'userBlogs']);
+
+    // Comments API Routes
+    Route::prefix('comments')->name('comments.')->group(function () {
+        // Route::get('/', [CommentController::class, 'index'])->name('index');
     });
 });
 

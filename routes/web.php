@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\web\BlogController;
 use App\Http\Controllers\web\NoteController;
 use App\Http\Controllers\web\TaskController;
 use Illuminate\Foundation\Application;
@@ -48,7 +49,9 @@ Route::middleware('auth')->group(function () {
 
     // Note routes
     Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
-    
+
+    //  BLog routes
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 });
 
 require __DIR__ . '/auth.php';

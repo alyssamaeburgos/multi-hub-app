@@ -149,6 +149,17 @@ const showingNavigationDropdown = ref(false);
                                             </template>
                                         </Dropdown>
                                     </div>
+
+                                    <div class="ms-3 relative">
+                                        <NavLink
+                                            :href="route('blog.index')"
+                                            :active="
+                                                route().current('blog.index')
+                                            "
+                                        >
+                                            Blog
+                                        </NavLink>
+                                    </div>
                                 </div>
                             </div>
                         </div>

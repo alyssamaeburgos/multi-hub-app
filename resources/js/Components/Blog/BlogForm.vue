@@ -61,9 +61,17 @@
             </div>
 
             <div class="flex justify-end space-x-4">
-                <button
+                <!-- <button
                     type="button"
                     @click="$emit('cancel')"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                    Cancel
+                </button> -->
+
+                <button
+                    type="button"
+                    @click="handleCancel"
                     class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                     Cancel
@@ -81,11 +89,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import axios from "axios";
-import { usePage } from "@inertiajs/vue3";
-
-// Components Imports
 
 const props = defineProps({
     blog: {
@@ -98,6 +102,8 @@ const props = defineProps({
 const emit = defineEmits(["cancel", "saved"]);
 
 const editing = computed(() => props.blog !== null);
+
+console.log(editing.value);
 
 const form = ref({
     title: "",
@@ -116,26 +122,41 @@ onMounted(() => {
 });
 
 // Add this before your handleSubmit to check axios defaults
-console.log("Axios defaults:", axios.defaults.baseURL, axios.defaults.headers);
+// console.log("Axios defaults:", axios.defaults.baseURL, axios.defaults.headers);
 
 const handleSubmit = async () => {
     try {
         let response;
 
         if (editing.value) {
+            // const response = await axios.put(
+            //     `/api/blogs/${props.blog.id}`,
+            //     form.value
+            // );
             response = await axios.put(
                 `/api/blogs/${props.blog.id}`,
                 form.value
             );
+
+            // console.log(response.data);
         } else {
             response = await axios.post("/api/blogs", form.value);
         }
-
         emit("saved", response.data);
     } catch (error) {
         console.error("Full error object:", error);
         console.error("Error response:", error.response);
         console.error("Error message:", error.message);
     }
+};
+
+const handleCancel = () => {
+    form.value = {
+        title: "",
+        content: "",
+        visibility: "public",
+    };
+
+    emit("cancel");
 };
 </script>

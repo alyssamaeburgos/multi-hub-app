@@ -3,8 +3,6 @@
         <div class="p-6">
             <h2 class="text-xl font-semibold mb-2">{{ blog.title }}</h2>
             <p class="text-gray-600 text-sm mb-4">
-                <!-- Posted by {{ blog.user.name }} on -->
-                <!-- Posted by {{ blog.user?.name || "Unknown author" }} on -->
                 Posted by {{ fullName }} on
                 {{ formatDate(blog.created_at) }}
             </p>
@@ -21,7 +19,7 @@
             <!-- Actions for owner -->
             <div v-if="isOwner" class="mt-4 flex space-x-2">
                 <button
-                    @click="$emit('edit', blog)"
+                    @click="emit('edit', blog)"
                     class="text-blue-500 hover:text-blue-700"
                 >
                     Edit
@@ -44,7 +42,6 @@
 
 <script setup>
 import { computed } from "vue";
-// import { marked } from "marked";
 
 // Components
 import CommentList from "@/Components/Blog/CommentList.vue";
@@ -62,21 +59,35 @@ const props = defineProps({
 
 const emit = defineEmits(["edit", "delete"]);
 
-// const renderedContent = computed(() => {
-//     return marked(props.blog.content);
+// const fullName = computed(() => {
+//     if (!props.blog.user) return "Unknown author";
+//     return [
+//         props.blog.user.first_name,
+//         "''",
+//         props.blog.user.name,
+//         "''",
+//         props.blog.user.last_name,
+//     ]
+//         .filter(Boolean)
+//         .join(" ");
 // });
 
 const fullName = computed(() => {
-    if (!props.blog.user) return "Unknown author";
-    return [
+    if (!props.blog.user) {
+        // If user object is missing but user_id exists
+        return props.blog.user_id
+            ? `User #${props.blog.user_id}`
+            : "Unknown author";
+    }
+
+    // Build name parts without the quotes you had before
+    const nameParts = [
         props.blog.user.first_name,
-        "''",
-        props.blog.user.name,
-        "''",
+        props.blog.user.name, // Not sure why you had quotes around this
         props.blog.user.last_name,
-    ]
-        .filter(Boolean)
-        .join(" ");
+    ].filter(Boolean); // This removes any undefined/null/empty parts
+
+    return nameParts.join(" ") || "Unknown author";
 });
 
 const renderedContent = computed(() => {

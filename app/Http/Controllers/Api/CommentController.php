@@ -12,9 +12,13 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // public function index()
+    public function index(Blog $blog)
     {
-        $comments = Comment::with('user')->get();
+        // $comments = Comment::with('user')->get();
+
+        // Fetch only comments belonging to this specific blog
+        $comments = $blog->comments()->with('user')->get();
 
         return response()->json($comments, 201);
     }
@@ -38,12 +42,6 @@ class CommentController extends Controller
                 'user_id' => auth()->id() // Associate with current user
             ]);
 
-            // // Create comment through the authenticated user
-            // $comment = auth()->user()->comments()->create([
-            //     'content' => $validated['content'],
-            //     'blog_id' => $blog->id // Associate with the blog
-            // ]);
-
             return response()->json($comment, 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -51,16 +49,6 @@ class CommentController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-        // $request->validate([
-        //     'content' => 'required|string'
-        // ]);
-
-        // $comment = $blog->comments()->create([
-        //     'user_id' => auth()->id(),
-        //     'content' => $request->content
-        // ]);
-
-        // return response()->json($comment, 201);
     }
 
     /**
@@ -74,23 +62,32 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id, Comment $comment)
+    public function update(Request $request, Comment $comment)
     {
-        $request->validate([
-            'content' => 'required|string',
+
+        // Verify the authenticated user owns the comment
+        if ($request->user()->id !== $comment->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'content' => 'required|string|max:2000',
         ]);
 
-        $comment->update($request->all());
+        $comment->update($validated);
 
-        return response()->json($comment);
+        return response()->json($comment->load('user'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment)
+    public function destroy(Request $request, Comment $comment)
     {
-        $this->authorize('delete', $comment);
+        if ($request->user()->id !== $comment->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $comment->delete();
 
         return response()->json(null, 204);

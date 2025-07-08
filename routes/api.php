@@ -55,9 +55,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('blogs', BlogController::class)->except(['index']);
     Route::get('blogs/{blog}/comments', [CommentController::class, 'index']);
     Route::post('blogs/{blog}/comments', [CommentController::class, 'store']);
+    Route::put('/comments/{comment}', [CommentController::class, 'update']);
     Route::delete('comments/{comment}', [CommentController::class, 'destroy']);
     Route::get('user/blogs', [BlogController::class, 'userBlogs']);
-
 });
 
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {

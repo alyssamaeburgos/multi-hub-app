@@ -14,20 +14,13 @@ class BlogController extends Controller
      */
     public function index()
     {
-        // $blogs = Blog::public()->latest()->get();
-        // $blogs = Blog::where('visibility', 'public')->latest()->get();
-
-        $blogs= Blog::with('user')->where('visibility', 'public')->get();
+        $blogs = Blog::with('user')->where('visibility', 'public')->get();
 
         return response()->json($blogs, 201);
     }
 
-    public function userBlogs()
+    public function userBlogs(Request $request)
     {
-        dd(Auth::user());
-
-        // $blogs = auth()->user()->blogs()->latest()->get();
-
         // $request->user() will return the authenticated User model instance
         // if the 'auth:sanctum' middleware has successfully authenticated the request.
         $user = $request->user();
@@ -46,34 +39,6 @@ class BlogController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // public function store(Request $request)
-    // {
-    //     // dd(Auth::user());
-
-    //     $validated = $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'content' => 'required|string',
-    //         'visibility' => 'required|in:public, private'
-    //     ]);
-
-    //     // $blogs = auth()->user()->blogs()->create($request->all());
-
-    //     $user = $request->user();
-
-    //     if (!$user) {
-    //         return response()->json(['message' => 'Unauthenticated', 401]);
-    //     }
-
-    //     // $blogs = Blog::create($validated);
-
-    //     // Create blog with authenticated user
-    //     // $blogs = $request->user()->blogs()->create($validated);
-
-    //     $blogs = $user->blogs()->latest()->get();
-
-    //     return response()->json($blogs, 201);
-    // }
-
     public function store(Request $request)
     {
         try {
@@ -111,7 +76,7 @@ class BlogController extends Controller
      */
     public function update(Request $request, Blog $blog)
     {
-        $this->authorize('update', $blog);
+        // $this->authorize('update', $blog);
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -127,9 +92,13 @@ class BlogController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Blog $blog)
+    public function destroy(Blog $blog, Request $request)
     {
-        $this->authorize('delete', $blog);
+        if ($request->user()->id !== $blog->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // $this->authorize('delete', $blog);
 
         $blog->delete();
 

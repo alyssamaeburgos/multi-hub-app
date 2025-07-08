@@ -80,10 +80,6 @@ const handleAddNote = async (newNote) => {
         const response = await axios.post("/api/notes", newNote);
         const createdNote = response.data.data;
 
-        console.log("newNote", createdNote);
-
-        // notes.value.unshift(createdNote);
-
         const index = notes.value.findIndex(
             (n) => !n.id && n.user_id === user.id
         );
@@ -138,7 +134,6 @@ const addNewNote = () => {
         date_created: new Date(),
         user_id: user.id,
     };
-    // notes.value.unshift(newNote);
     selectedNote.value = newNote;
 };
 
@@ -270,7 +265,7 @@ const handleClearSearch = async (term) => {
 
         searchTerm.value = term;
         await fetchNotes();
-        console.log("Notes after fetch:", notes.value); // Debug
+        // console.log("Notes after fetch:", notes.value); // Debug
     } catch (err) {
         error.value = "Failed to search notes";
     } finally {

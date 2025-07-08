@@ -61,14 +61,6 @@
             </div>
 
             <div class="flex justify-end space-x-4">
-                <!-- <button
-                    type="button"
-                    @click="$emit('cancel')"
-                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                    Cancel
-                </button> -->
-
                 <button
                     type="button"
                     @click="handleCancel"
@@ -96,7 +88,6 @@ const props = defineProps({
         type: Object,
         default: null,
     },
-    // editing: Boolean,
 });
 
 const emit = defineEmits(["cancel", "saved"]);
@@ -129,16 +120,10 @@ const handleSubmit = async () => {
         let response;
 
         if (editing.value) {
-            // const response = await axios.put(
-            //     `/api/blogs/${props.blog.id}`,
-            //     form.value
-            // );
             response = await axios.put(
                 `/api/blogs/${props.blog.id}`,
                 form.value
             );
-
-            // console.log(response.data);
         } else {
             response = await axios.post("/api/blogs", form.value);
         }

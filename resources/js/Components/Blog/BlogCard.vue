@@ -59,19 +59,6 @@ const props = defineProps({
 
 const emit = defineEmits(["edit", "delete"]);
 
-// const fullName = computed(() => {
-//     if (!props.blog.user) return "Unknown author";
-//     return [
-//         props.blog.user.first_name,
-//         "''",
-//         props.blog.user.name,
-//         "''",
-//         props.blog.user.last_name,
-//     ]
-//         .filter(Boolean)
-//         .join(" ");
-// });
-
 const fullName = computed(() => {
     if (!props.blog.user) {
         // If user object is missing but user_id exists
@@ -80,10 +67,9 @@ const fullName = computed(() => {
             : "Unknown author";
     }
 
-    // Build name parts without the quotes you had before
     const nameParts = [
         props.blog.user.first_name,
-        props.blog.user.name, // Not sure why you had quotes around this
+        props.blog.user.name,
         props.blog.user.last_name,
     ].filter(Boolean); // This removes any undefined/null/empty parts
 

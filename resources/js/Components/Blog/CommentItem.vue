@@ -67,7 +67,7 @@ const formatDate = (dateString) => {
 };
 
 const handleEdit = () => {
-    console.log("Edit button clicked", props.comment); // Add this
+    console.log("Edit button clicked", props.comment);
     emit("edit-comment", props.comment);
 };
 

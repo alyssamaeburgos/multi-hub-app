@@ -48,7 +48,6 @@ const props = defineProps({
 const user = usePage().props.auth.user;
 const comments = ref([]);
 const editingComment = ref(null);
-// const isLoggedIn = ref(true);
 const isLoggedIn = computed(() => !!user);
 
 const isCommentOwner = (comment) =>
@@ -63,18 +62,6 @@ const fetchComments = async () => {
     }
 };
 
-// const handleCommentAdded = async (newComment) => {
-//     try {
-//         await fetchComments();
-//     } catch (error) {
-//         // Optional: revert UI if update failed
-//         comments.value = comments.value.filter((c) => c.id !== newComment.id);
-//         console.error("Failed to refresh comments:", error);
-//     }
-
-//     comments.value.push(newComment);
-// };
-
 const handleCommentAdded = (newComment) => {
     comments.value.unshift(newComment);
 };
@@ -84,8 +71,7 @@ const handleCommentDeleted = (commentId) => {
 };
 
 const handleEditComment = (comment) => {
-    console.log("Editing comment received", comment); // Add this
-    // editingComment.value = comment;
+    console.log("Editing comment received", comment);
     editingComment.value = { ...comment };
 };
 

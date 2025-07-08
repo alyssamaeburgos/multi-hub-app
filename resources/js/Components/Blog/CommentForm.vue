@@ -5,18 +5,12 @@
             <textarea
                 v-model="content"
                 :placeholder="
-                    isEditing ? 'Edit your comment...' : 'Write a comment...' "
+                    isEditing ? 'Edit your comment...' : 'Write a comment...'
+                "
                 rows="3"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
             ></textarea>
-            <!-- <textarea
-                v-model="content"
-                placeholder="Write a comment..."
-                rows="3"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-            ></textarea> -->
 
             <div class="mt-2 flex justify-end space-x-2">
                 <!-- Cancel button -->
@@ -37,29 +31,12 @@
                     <span v-if="isSubmitting">Processing...</span>
                     <span v-else>{{ isEditing ? "Update" : "Post" }}</span>
                 </button>
-
-                <!-- <button
-                    type="submit"
-                    class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                >
-                    {{ isEditing ? "Update Comment" : "Post Comment" }}
-                </button> -->
-
-                <!-- <div class="mt-2 flex justify-end">
-                <button
-                    type="submit"
-                    class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                >
-                    Post Comment
-                </button>
-            </div> -->
             </div>
         </form>
     </div>
 </template>
 
 <script setup>
-import { comment } from "postcss";
 import { ref, watch, computed } from "vue";
 
 const props = defineProps({
@@ -79,30 +56,6 @@ const emit = defineEmits(["comment-added", "comment-updated", "cancel-edit"]);
 const content = ref("");
 const isSubmitting = ref(false);
 const isEditing = computed(() => !!props.commentToEdit);
-// const isEditing = ref(false);
-
-// watch(
-//     () => props.commentToEdit,
-//     (newVal) => {
-//         if (newVal) {
-//             content.value = newVal.content;
-//             isEditing.value = true;
-//         } else {
-//             content.value = "";
-//             isEditing.value = false;
-//         }
-//     },
-//     { immediate: true }
-// );
-
-// watch(
-//     () => props.commentToEdit,
-//     (newVal) => {
-//         console.log("commentToEdit changed", newVal); // Debug
-//         content.value = newVal?.content || "";
-//     },
-//     { immediate: true }
-// );
 
 watch(
     () => props.commentToEdit,
@@ -123,8 +76,8 @@ const cancelEdit = () => {
 };
 
 const handleSubmit = async () => {
-    console.log("Submitting form", { isEditing, content: content.value }); // Add this
-    console.log("Blog ID:", props.blogId); // Add this line
+    console.log("Submitting form", { isEditing, content: content.value });
+    console.log("Blog ID:", props.blogId);
     if (isSubmitting.value) return;
     isSubmitting.value = true;
 
@@ -155,22 +108,4 @@ const handleSubmit = async () => {
         isSubmitting.value = false;
     }
 };
-
-// const handleEdit = (comment = {});
-
-// const handleSubmit = async () => {
-//     try {
-//         const response = await axios.post(
-//             `/api/blogs/${props.blogId}/comments`,
-//             {
-//                 content: content.value,
-//             }
-//         );
-
-//         emit("comment-added", response.data);
-//         content.value = "";
-//     } catch (error) {
-//         console.error("Error posting comment:", error);
-//     }
-// };
 </script>

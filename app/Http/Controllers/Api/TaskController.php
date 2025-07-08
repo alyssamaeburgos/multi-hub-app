@@ -30,7 +30,6 @@ class TaskController extends Controller
     {
         // Validated the request data
         $validatedData = $request->validate([
-            // 'user_id' => 'nullable|exists:users,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'deadline' => 'nullable|date',
@@ -38,13 +37,20 @@ class TaskController extends Controller
         ]);
 
         $task = Task::create([
-            // 'user_id' => $request->input('user_id'),
             'user_id' => auth()->id(), // ✅ Get authenticated user ID
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'deadline' => $request->input('deadline'),
-            'status' => $request->input('status', 'open'), // Default to 'open' if not provided
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'deadline' => $validatedData['deadline'],
+            'status' => $validatedData(['status', 'open']), // Default to 'open' if not provided
         ]);
+
+        // $task = Task::create([
+        //     'user_id' => auth()->id(), // ✅ Get authenticated user ID
+        //     'title' => $request->input('title'),
+        //     'description' => $request->input('description'),
+        //     'deadline' => $request->input('deadline'),
+        //     'status' => $request->input('status', 'open'), // Default to 'open' if not provided
+        // ]);
 
         // redirect to a specific route with a success message
         return response()->json(['message' => 'Item created successfully', 'data' => $task], 201);
@@ -71,7 +77,6 @@ class TaskController extends Controller
     {
         // Validated the request data
         $validatedData = Validator::make($request->all(), [
-            // 'user_id' => 'nullable|exists:users,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'deadline' => 'nullable|date',
@@ -90,7 +95,6 @@ class TaskController extends Controller
 
         $task->update($request->all());
 
-        // return response()->json(['message' => 'Task updated successfully', 'task' => $task]);
         return response()->json([
             'message' => 'Task updated successfully!',
             'task' => $task,
@@ -108,9 +112,9 @@ class TaskController extends Controller
         if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
-    
+
         $task->delete();
-        
+
         return response()->json(['message' => 'Task deleted successfully']);
     }
 }

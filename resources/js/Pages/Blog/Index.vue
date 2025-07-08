@@ -13,13 +13,6 @@
             </button>
 
             <!-- Blog Form (conditionally shown) -->
-            <!-- <BlogForm
-                v-if="showForm"
-                :blog="selectedBlog"
-                @cancel="showForm = false"
-                @saved="handleBlogSaved"
-            /> -->
-
             <BlogForm
                 v-if="showForm"
                 :blog="selectedBlog"
@@ -58,7 +51,6 @@ const error = ref("");
 const isLoggedIn = ref(true);
 const showForm = ref(false);
 const editingBlog = ref(null);
-// const editing = ref(false);
 const selectedBlog = ref(null); // Stores the blog to edit (null = create mode)
 
 const blogs = ref([]);

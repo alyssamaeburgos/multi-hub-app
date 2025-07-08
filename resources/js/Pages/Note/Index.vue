@@ -70,9 +70,7 @@ const handleNoteSelected = (note) => {
         notes.value.unshift(note); // Add new note
     }
 
-    // console.log("handleNoteSelected triggered with:", note);
     selectedNote.value = note;
-    // console.log("selectedNote in parent:", selectedNote.value);
 };
 
 const handleAddNote = async (newNote) => {

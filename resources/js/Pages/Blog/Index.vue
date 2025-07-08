@@ -13,9 +13,17 @@
             </button>
 
             <!-- Blog Form (conditionally shown) -->
+            <!-- <BlogForm
+                v-if="showForm"
+                :blog="selectedBlog"
+                @cancel="showForm = false"
+                @saved="handleBlogSaved"
+            /> -->
+
             <BlogForm
                 v-if="showForm"
-                @cancel="showForm = false"
+                :blog="selectedBlog"
+                @cancel="handleCancel"
                 @saved="handleBlogSaved"
             />
 
@@ -51,6 +59,7 @@ const isLoggedIn = ref(true);
 const showForm = ref(false);
 const editingBlog = ref(null);
 // const editing = ref(false);
+const selectedBlog = ref(null); // Stores the blog to edit (null = create mode)
 
 const blogs = ref([]);
 
@@ -73,26 +82,54 @@ const fetchBlogs = async () => {
 
 // const showForm = () => {};
 
+// const handleBlogSaved = (newBlog) => {
+//     // editing.value = true;
+
+//     if (editingBlog.value) {
+//         const index = blogs.value.findIndex((b) => b.id === newBlog.id);
+
+//         if (index !== -1) {
+//             blogs.value[index] = newBlog;
+//         }
+//     } else {
+//         blogs.value.unshift(newBlog);
+//     }
+//     // finally {
+//     //     editing.value = false;
+//     // }
+//     showForm.value = false;
+//     selectedBlog.value = null; // IMPORTANT: Reset selectedBlog when canceling
+// };
+
 const handleBlogSaved = (newBlog) => {
-    // editing.value = true;
+    const index = blogs.value.findIndex((b) => b.id === newBlog.id);
 
-    if (editingBlog.value) {
-        const index = blogs.value.findIndex((b) => b.id === newBlog.id);
-
-        if (index !== -1) {
-            blogs.value[index] = newBlog;
-        }
+    if (index !== -1) {
+        blogs.value[index] = newBlog; // ✅ Update existing blog in place
     } else {
-        blogs.value.unshift(newBlog);
-    } 
-    // finally {
-    //     editing.value = false;
-    // }
+        blogs.value.unshift(newBlog); // ✅ Add new blog to the beginning
+    }
+
+    // ✅ Cleanup: hide form, clear selected & editing blog
+    showForm.value = false;
+    selectedBlog.value = null;
+    editingBlog.value = null; // <-- ✅ Make sure to clear this after editing
 };
 
-const handleEditBlog = () => {};
+const handleCancel = () => {
+    showForm.value = false;
+    selectedBlog.value = null; // IMPORTANT: Reset selectedBlog when canceling
+};
 
-const handleDeleteBlog = () => {};
+const handleEditBlog = (b) => {
+    selectedBlog.value = b;
+
+    showForm.value = true;
+};
+
+const handleDeleteBlog = () => {
+    
+};
 
 onMounted(fetchBlogs);
 </script>

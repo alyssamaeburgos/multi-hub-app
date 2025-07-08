@@ -413,15 +413,7 @@ export default {
     },
 
     setup(props) {
-        // const page = usePage(); // ✅ Get page props
-        // const authUser = computed(() => page.props.auth.user); // ✅ Get authenticated user
-
         const user = usePage().props.auth.user;
-
-        // ✅ Debugging
-        // console.log("Page Props:", page.props);
-        // console.log("Authenticated User:", authUser.value);
-        // console.log(user);
 
         const form = ref({
             user_id: user.id,
@@ -468,19 +460,6 @@ export default {
                         );
                 }
             });
-
-            // axios
-            //     .delete(`/api/tasks/${id}`)
-            //     .then((response) => {
-            //         console.log(response.data.message);
-            //         tasks.value = tasks.value.filter((task) => task.id !== id);
-            //     })
-            //     .catch((error) => {
-            //         console.error(
-            //             "Error deleting task:",
-            //             error.response?.data || error.message
-            //         );
-            //     });
         };
 
         const statusClass = (status) => {
@@ -517,20 +496,13 @@ export default {
         // Function to fetch tasks from the API
         const tableLoading = async () => {
             try {
-                // Debugging:
-                // console.log("Axios inside tableLoading:", axios); // Add this line
-                // console.log("Axios right before get:", axios); //Add this line
-
                 const response = await axios.get("/api/tasks"); // Call Laravel API
-
-                // console.log("Fetched Tasks:", response.data); // Debugging: Check if API returns empty array
 
                 tasks.value = response.data; // Update tasks with fetched data
             } catch (error) {
                 console.error("Error fetching tasks:", error); // Log errors
             } finally {
                 loading.value = false;
-                // console.log("Final tasks value:", tasks.value); // Check final value
             }
         };
 
@@ -539,8 +511,6 @@ export default {
                 form.value.user_id = user.id; // Ensure user_id before sending
 
                 const response = await axios.post("/api/tasks", form.value);
-                // console.log("Success:", response.data);
-                // alert("Task added successfully!");
 
                 Swal.fire({
                     title: "Task added successfully!",
@@ -565,8 +535,6 @@ export default {
                     status: "open",
                 };
             } catch (error) {
-                // console.error("Error:", error); // Log the entire error object
-
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx

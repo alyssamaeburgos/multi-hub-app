@@ -31,7 +31,6 @@
                                     id="deadline"
                                     v-model="form.deadline"
                                 />
-                                <!-- class="w-full p-2 border rounded" -->
                             </div>
 
                             <div class="flex-1">
@@ -46,7 +45,6 @@
                                     id="status"
                                     class="w-full p-2 border rounded"
                                 >
-                                    <!-- class="w-full p-2 border rounded" style="background-color: white" -->
                                     <option
                                         v-for="option in statusOptions"
                                         :key="option.value"
@@ -589,26 +587,12 @@ export default {
 
 .tasks {
     padding: 20px;
-    /* background-color: #f9f9f9; */
-    /* background-color: #FAF1E6; */
-    /* border-radius: 8px; */
     max-width: 600px;
-    /* margin: 0 auto; */
-    /* display: flex;
-    flex-basis: auto; */
 }
 
 .tasks-add {
     margin-bottom: 20px;
 }
-
-/* .tasks-form { */
-/* max-width: 50%; */
-/* display: flex;
-    justify-content: center;
-    align-items: center; */
-/* margin-left: 50px; */
-/* } */
 
 .tasks-add input,
 .tasks-add textarea {

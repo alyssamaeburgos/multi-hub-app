@@ -15,7 +15,6 @@ class CommentController extends Controller
     // public function index()
     public function index(Blog $blog)
     {
-        // $comments = Comment::with('user')->get();
 
         // Fetch only comments belonging to this specific blog
         $comments = $blog->comments()->with('user')->get();

@@ -31,7 +31,6 @@
                                     id="deadline"
                                     v-model="form.deadline"
                                 />
-                                <!-- class="w-full p-2 border rounded" -->
                             </div>
 
                             <div class="flex-1">
@@ -47,7 +46,6 @@
                                     id="status"
                                     class="w-full p-2 border rounded"
                                 >
-                                    <!-- class="w-full p-2 border rounded" style="background-color: white" -->
                                     <option
                                         v-for="option in statusOptions"
                                         :key="option.value"
@@ -122,7 +120,6 @@ export default {
             user_id: user.id,
             title: props.task.title, // Initialize form with task data
             description: props.task.description,
-            // deadline: props.task.deadline.split(" ")[0], //Format date
             deadline: props.task.deadline
                 ? props.task.deadline.split(" ")[0]
                 : "",

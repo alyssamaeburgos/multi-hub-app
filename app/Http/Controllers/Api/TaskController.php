@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 // use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -41,16 +42,9 @@ class TaskController extends Controller
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
             'deadline' => $validatedData['deadline'],
-            'status' => $validatedData(['status', 'open']), // Default to 'open' if not provided
+            // 'status' => $validatedData(['status', 'open']), // Default to 'open' if not provided
+            'status' => $validatedData['status'] ?? 'open', // ✅ Fallback to 'open' if null
         ]);
-
-        // $task = Task::create([
-        //     'user_id' => auth()->id(), // ✅ Get authenticated user ID
-        //     'title' => $request->input('title'),
-        //     'description' => $request->input('description'),
-        //     'deadline' => $request->input('deadline'),
-        //     'status' => $request->input('status', 'open'), // Default to 'open' if not provided
-        // ]);
 
         // redirect to a specific route with a success message
         return response()->json(['message' => 'Item created successfully', 'data' => $task], 201);

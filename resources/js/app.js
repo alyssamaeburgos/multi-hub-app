@@ -9,6 +9,8 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
+import Calendar from "./Components/Calendar.vue";
+
 // import axios from "axios"; // Import Axios
 
 // import * as bootstrap from "bootstrap";
@@ -38,6 +40,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(VueSweetalert2)
+            .component('Calendar', Calendar)
             .mount(el);
     },
     progress: {

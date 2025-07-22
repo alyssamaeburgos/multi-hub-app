@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/{id}/edit', [TaskController::class, 'update'])->name('tasks.update');
     Route::get('/tasks/all', [TaskController::class, 'show'])->name('tasks.show');
+    Route::get('/tasks/calendar', [TaskController::class, 'calendar'])->name('tasks.calendar');
 
     // Note routes
     Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');

@@ -40,6 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [TaskController::class, 'show'])->name('show');
         Route::put('/{id}', [TaskController::class, 'update'])->name('update');
         Route::delete('/{id}', [TaskController::class, 'destroy'])->name('delete');
+
+        // Calendar
+        Route::get('/calendar', [TaskController::class, 'calendarIndex'])->name('calendar.index');
     });
 
     // Note API routes

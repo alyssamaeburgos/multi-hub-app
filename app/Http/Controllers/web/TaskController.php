@@ -25,4 +25,9 @@ class TaskController extends Controller
     {
         return Inertia::render('Task/Show');
     }
+
+    public function calendar()
+    {
+        return Inertia::render('Task/Calendar');
+    }
 }

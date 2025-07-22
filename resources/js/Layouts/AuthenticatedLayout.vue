@@ -103,6 +103,11 @@ const showingNavigationDropdown = ref(false);
                                                 >
                                                     List Tasks
                                                 </DropdownLink>
+                                                <DropdownLink
+                                                    :href="
+                                                        route('tasks.calendar')
+                                                    "
+                                                >Calendar</DropdownLink>
                                             </template>
                                         </Dropdown>
                                     </div>
